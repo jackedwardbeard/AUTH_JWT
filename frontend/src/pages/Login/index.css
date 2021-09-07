@@ -1,0 +1,42 @@
+.pageContainer {
+    height: 90vh;
+    background-color:lightseagreen;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    overflow: hidden;
+}
+
+.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.inputBox {
+    text-align: center;
+    height: max(30px, 3vh);
+    width: max(200px,20vw);
+    margin: 5px;
+}
+
+.title {
+    color: white;
+    font-size: max(1.5rem, 3vmin);
+    text-align: center;
+    margin-bottom: max(30px, 3vh);
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.link {
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
