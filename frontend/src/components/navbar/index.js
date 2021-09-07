@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import './index.css'
-import logo from '../../images/smiley.png'
+import logo from '../../Images/smiley.png'
 import { FaBars } from 'react-icons/fa' // mobile menu icon
 import axios from 'axios'
 import { UserContext } from '../../Context/User'
