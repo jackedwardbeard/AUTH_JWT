@@ -1,5 +1,5 @@
 # AUTH_JWT - MERN stack
-A MERN stack which uses JWT (JSON Web Tokens) local authentication.
+A MERN stack which uses JWT (JSON Web Tokens) for local authentication.
 
 # To make it work
 You need to create a backend .env file containing values for:
