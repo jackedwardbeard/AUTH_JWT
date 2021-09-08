@@ -14,6 +14,12 @@ You need to create a backend .env file containing values for:
 * JWT
 * Upon login, an access token and a refresh token are given to the client. The access token currently lasts for 30 seconds until it expires, in which case the client needs to hit the /refresh endpoint to get a new access token. For demonstration purposes, the only route that requires an access token is /logout. So if you login, and attempt to logout within 30 seconds, you'll see it works. However, if you wait until after 30 seconds, trying to logout will result in your access token being invalid, and logout won't work. I made this route so that if your access token is expired and you try to log out, the /refresh endpoint will automatically be hit, and you will get another access token, giving you another 30 seconds to log out, and so on. Your refresh token never expires (it could be made to do so, though). Instead, when you log out, your refresh token is deleted from the server (the server maintains a list of all currently-valid refresh tokens). In reality, these should be stored on a database. Or if we don't want to store them at all, we could just set an expiry on refresh tokens too, and force log out the user when their refresh token expires. This would require them to login again to get a new access token and refresh token. The current implementation means that a user's session will persist until they logout, or their browser localStorage is cleared somehow.
 
+# To make a route protected
+* Simply add the 'verifyToken' middleware function as the second parameter to the route.
+* E.g. app.post('/unprotected', (req, res) => ...
+* E.g. app.post('/protected', verifyToken, (req, res) => ...
+* This ensures that the verifyToken function has access to the incoming request before the route itself does, and so can perform checks to see if the incoming request access token is valid or not.
+
 # What it does so far
 * Allows local register
 * Upon successful register (successful if provided email isn't taken/found in DB), send a confirmation email to the given email address
