@@ -176,6 +176,7 @@ app.post('/login', (req, res) => {
     const incomingPassword = req.body.password;
 
     User.findOne({ email: incomingEmail }, async(err, returnedUser) => { 
+        
         if (err) {
             console.log(err);
             return [returnedUser, match];
@@ -267,18 +268,23 @@ app.post('/confirmEmail', (req, res) => {
 
                 // only update if email isn't already confirmed
                 if (confirmedEmail === false) {
+
                     User.findByIdAndUpdate(
                         { _id: userID },
                         { confirmedEmail: true },
-                        (err, result) => {
+                        (err, returnedUser) => {
+
+                        // some other error occurred
                         if (err) {
                             console.log(err);
                             res.status(400).send(err);
                         } 
+                        // if the user hasn't confirmed their email
                         else {
-                            console.log(result);
+                            console.log(returnedUser);
                             res.status(200).send('Email successfully confirmed!');
                         }
+
                         }
                     );
                 }
@@ -306,7 +312,7 @@ app.post('/sendResetEmail', (req, res) => {
     const email = req.body.email;
 
     // look for an existing user with the email input from the send reset email page
-    User.find({email: email}, (err, result) => {
+    User.find({email: email}, (err, returnedUser) => {
         
         if (err) {
             res.status(400).send('An error occured.');
@@ -315,10 +321,10 @@ app.post('/sendResetEmail', (req, res) => {
         else {
 
             // if user was found
-            if (result && result.length > 0) {
+            if (returnedUser && returnedUser.length > 0) {
 
                 // get user ID associated with incoming email address
-                const userID = result[0]._id;
+                const userID = returnedUser[0]._id;
         
                 // send a password reset email with their userID as the URL parameter
                 sendPasswordResetEmail(email, userID);
@@ -346,7 +352,7 @@ app.post('/passwordChange', async(req, res) => {
     const newPasswordHashed = await bcrypt.hash(req.body.newPassword, 10);
 
     // find user associated with userid, update password
-    User.findOneAndUpdate({_id: userID}, {$set: {password: newPasswordHashed}}, (err, result) => {
+    User.findOneAndUpdate({_id: userID}, {$set: {password: newPasswordHashed}}, (err, returnedUser) => {
 
         if (err) {
             console.status(400).log('An error occurred.');
@@ -355,7 +361,7 @@ app.post('/passwordChange', async(req, res) => {
         else {
         
             // if user found
-            if (result) {
+            if (returnedUser) {
                 res.status(200).send('Password successfully updated!');
             }
 
