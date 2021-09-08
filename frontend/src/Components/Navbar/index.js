@@ -93,7 +93,7 @@ const Navbar = ({reverseState}) => {
                             // update user global state with the refreshed token
                             setUser(loggedinUser);
 
-                            setDialogText('Successfully refreshed accessToken.');
+                            setDialogText('Successfully refreshed access token.');
                             handleOpen();
                         })
                         .catch((err) => {

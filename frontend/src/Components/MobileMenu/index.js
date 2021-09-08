@@ -83,9 +83,9 @@ const MobileMenu = ({clicked, reverseState}) => {
                             // update user global state with the refreshed accessToken
                             setUser(loggedinUser);
 
-                            console.log('user after updating user state to loggedinUser', loggedinUser);
+                            console.log('User after updating user state to loggedinUser', loggedinUser);
 
-                            setDialogText('Successfully refreshed accessToken.');
+                            setDialogText('Successfully refreshed access token.');
                             handleOpen();
                         })
                         .catch((err) => {
