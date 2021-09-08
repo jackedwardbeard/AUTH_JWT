@@ -57,8 +57,9 @@ const verifyToken = (req, res, next) => {
 
 // creates a new accessToken, signed with the uuid of the user
 const generateAccessToken = (user) => {
+
     const payload = {
-        userid: user._id,
+        _id: user._id,
     }
 
     const expiresIn = {
@@ -72,8 +73,9 @@ const generateAccessToken = (user) => {
 
 // creates a new refreshToken, signed with the uuid of the user
 const generateRefreshToken = (user) => {
+
     const payload = {
-        userid: user._id,
+        _id: user._id,
     }
 
     // signed/'encoded' with our JWT_REFRESH_SECRET - we don't set expiries on refresh tokens, since we want to manage them ourselves
@@ -176,7 +178,7 @@ app.post('/login', (req, res) => {
     const incomingPassword = req.body.password;
 
     User.findOne({ email: incomingEmail }, async(err, returnedUser) => { 
-        
+
         if (err) {
             console.log(err);
             return [returnedUser, match];
@@ -192,8 +194,8 @@ app.post('/login', (req, res) => {
             if (match === true) {
 
                 // generate a new JWT and a JWT_Refresh token on login
-                const accessToken = generateAccessToken( {userid: user.userid} );
-                const refreshToken = generateRefreshToken( {userid: user.userid} );
+                const accessToken = generateAccessToken(user);
+                const refreshToken = generateRefreshToken(user);
 
                 // push refresh token to refreshToken list (for us to maintain)
                 refreshTokens.push(refreshToken);
