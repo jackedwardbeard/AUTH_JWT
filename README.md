@@ -1,6 +1,9 @@
 # AUTH_JWT - MERN stack
 A MERN stack which uses JWT (JSON Web Tokens) for local authentication.
 
+# Note
+If you restart the server whilst logged in, the list of valid refresh tokens maintained by the server will be lost, so you will automatically have an invalid refresh token. Since /logout is a protected route as an example in this demo, if you're logged in and restart the server, you'll need to remove 'verifyToken' from the /logout route, proceed to logout, and then put 'verifyToken' back into the /logout route. Otherwise you'll be stuck being logged in, and won't be able to logout (since the server doesn't have your refresh token anymore). This is only an issue as /logout is being demonstrated as a protected route. Normally, logout wouldn't be protected, and some valuable resources would. So if your refresh token expired from the server being restarted, it normally wouldn't matter, since you'd be able to logout and log back in to get a new refresh and access token. You just can't here since I decided to make /logout protected, and there isn't any other implemented routes to demonstrate an access token failing on.
+
 # To make it work
 You need to create a backend .env file containing values for:
 * MONGO_URL=yourMongoDBConnectionStringHere
