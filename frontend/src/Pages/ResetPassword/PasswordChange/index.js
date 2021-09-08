@@ -7,7 +7,8 @@ import './index.css'
 
 const PasswordChange = (props) => {
 
-    // get user ID ( {userid: 'example-id-here'} ) passed as parameter to this page
+    // get the access token and userID, passed as parameter to this page
+    const accessToken = props.match.params.token;
     const userID = props.match.params.userid;
 
     const history = useHistory();
@@ -40,8 +41,9 @@ const PasswordChange = (props) => {
     const passwordChange = async() => {
 
         const data = {
-            'newPassword': newPassword,
-            'userid': userID
+            'token': accessToken,
+            'userid': userID,
+            'newPassword': newPassword
         }
 
         // if passwords match

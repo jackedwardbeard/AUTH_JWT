@@ -71,6 +71,18 @@ const generateAccessToken = (user) => {
     return jwt.sign(payload, process.env.JWT_SECRET, expiresIn);
 };
 
+// generate access token for password reset email
+const generateAccessTokenEmail = (userIDpayload) => {
+
+    const expiresIn = {
+        expiresIn: '60s'
+    }
+
+    // generateAccessTokenEmail is only called if there's an account linked to the email requested for password reset, so we just need to create an access token for the id linked to that email
+    return jwt.sign(userIDpayload, process.env.JWT_SECRET, expiresIn);
+    
+};
+
 // creates a new refreshToken, signed with the uuid of the user
 const generateRefreshToken = (user) => {
 
@@ -325,11 +337,18 @@ app.post('/sendResetEmail', (req, res) => {
             // if user was found
             if (returnedUser && returnedUser.length > 0) {
 
-                // get user ID associated with incoming email address
+                // id only, e.g. 68384242223
                 const userID = returnedUser[0]._id;
+
+                // of form { _id: 68384242223 }, to create an access token linked to this id
+                const userIDpayload = { _id: returnedUser[0]._id };
+
+                // create access token which expires in 60 seconds
+                const newAccessToken = generateAccessTokenEmail(userIDpayload);
+                console.log('generated an access token to attach to this password reset email that will last 60 second until it expires!');
         
-                // send a password reset email with their userID as the URL parameter
-                sendPasswordResetEmail(email, userID);
+                // send a password reset email with the new 60 second access token as the URL parameter (this email will expire/not work when the access token attached to it expires)
+                sendPasswordResetEmail(email, newAccessToken, userID);
                 
                 res.status(200).send('An email containing instructions on how to reset your password has been sent.');
             }
@@ -349,31 +368,51 @@ app.post('/sendResetEmail', (req, res) => {
 //    }
 app.post('/passwordChange', async(req, res) => {
     
+    const accessToken = req.body.token;
     const userID = req.body.userid;
     // hash and salt new password with bcrypt
     const newPasswordHashed = await bcrypt.hash(req.body.newPassword, 10);
 
-    // find user associated with userid, update password
-    User.findOneAndUpdate({_id: userID}, {$set: {password: newPasswordHashed}}, (err, returnedUser) => {
+    // only attempt to reset password if the attached access token is valid (so password reset links expire alongside the access token)
+    const validAccessToken = jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
 
         if (err) {
-            console.status(400).log('An error occurred.');
+            return false;
         }
-    
-        else {
-        
-            // if user found
-            if (returnedUser) {
-                res.status(200).send('Password successfully updated!');
-            }
 
-            // no user could be found with the given req userID
-            else {
-                res.status(404).send('Invalid userID provided.');
-            }
+        else {
+            return true;
         }
+    })
+
+    if (validAccessToken === true) {
+        // find user associated with userid, update password
+        User.findOneAndUpdate({_id: userID}, {$set: {password: newPasswordHashed}}, (err, returnedUser) => {
+
+            if (err) {
+                console.status(400).log('An error occurred.');
+            }
         
-    });
+            else {
+            
+                // if user found
+                if (returnedUser) {
+                    res.status(200).send('Password successfully updated!');
+                }
+
+                // no user could be found with the given req userID
+                else {
+                    res.status(404).send('Invalid userID provided.');
+                }
+            }
+            
+        });
+    } 
+
+    // attached access token is invalid, therefore this password reset link is also invalid
+    else {
+        res.status(400).send('This link has expired!');
+    }
 
 });
 

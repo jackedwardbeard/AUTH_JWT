@@ -44,7 +44,7 @@ const sendConfirmationEmail = (emailAddress, userID) => {
 };
 
 // send an email to confirm the new user's email address
-const sendPasswordResetEmail = (emailAddress, userID) => {
+const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
 
     // smtp is used to send the email, with the given credentials as the sender
     const smtpTransport = nodemailer.createTransport({
@@ -62,7 +62,7 @@ const sendPasswordResetEmail = (emailAddress, userID) => {
         subject: 'AUTH DEMO: You Requested A Change Of Password', // subject line
         html: `
         If it was you who requested this change,
-        <a href='${process.env.CLIENT_URL}/passwordchange/${userID}'>
+        <a href='${process.env.CLIENT_URL}/passwordchange/${accessToken}/${userID}'>
           click to reset your password. 
         </a>
         Otherwise, you can ignore this email.
