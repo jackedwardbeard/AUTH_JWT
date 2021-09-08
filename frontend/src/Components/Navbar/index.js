@@ -82,16 +82,15 @@ const Navbar = ({reverseState}) => {
                     await axios.post('http://localhost:5000/refresh', data)
                         .then((res) => {
                             
+                            // get the newly refreshed access token
                             const newAccessToken = res.data.accessToken;
-                            const newRefreshToken = res.data.refreshToken;
 
-                            // update localStorage with the refreshed tokens
+                            // update localStorage with the refreshed token
                             const loggedinUser = JSON.parse(localStorage.getItem('user'));
                             loggedinUser.accessToken = newAccessToken;
-                            loggedinUser.refreshToken = newRefreshToken;
                             localStorage.setItem('user', JSON.stringify(loggedinUser));
 
-                            // update user global state with the refreshed tokens
+                            // update user global state with the refreshed token
                             setUser(loggedinUser);
 
                             setDialogText('Successfully refreshed accessToken.');
