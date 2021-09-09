@@ -37,7 +37,7 @@ const verifyToken = (req, res, next) => {
 
     // the accessToken is stored in the auth header of the incoming request
     const authHeader = req.headers.authorization;
-    console.log('incoming headers to verifytoken:', req.headers)
+    console.log('Incoming headers to verifyToken:', req.headers)
     // if this header exists in the incoming request
     if (authHeader) {
       const accessToken = authHeader.split(' ')[1];
@@ -45,7 +45,6 @@ const verifyToken = (req, res, next) => {
       jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET, (err, user) => {
         // accessToken is no longer valid
         if (err) {
-            console.log('got here')
             return res.status(403).json('Access token is not valid!');
         }
         // if a user is returned, we 'decoded' the incoming accessToken and got the user behind it
@@ -105,8 +104,8 @@ app.get('/refreshEnabled/refresh', (req, res) => {
     // get the refresh token from the request's cookie header (cookie-parser lets us easily access the header through req.cookies)
     const incomingCookies = req.cookies;
     const refreshToken = incomingCookies.refreshToken;
-    console.log('got incoming refreshToken:', refreshToken);
-    console.log('list of current valid refreshTokens:', refreshTokens)
+    console.log('Got incoming refreshToken:', refreshToken);
+    console.log('List of current valid refreshTokens:', refreshTokens)
     // if no refreshToken, they're not logged in
     if (!refreshToken) {
         return res.status(401).json('You are not authenticated!');
@@ -116,12 +115,12 @@ app.get('/refreshEnabled/refresh', (req, res) => {
         return res.status(403).json('Refresh token is not valid!');
     }
     // otherwise, it is a valid refreshToken
-    // so we verify the refreshToken
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
         if (err) {
+            // valid, but expired
             return res.status(403).json('Refresh token is invalid.')
         };
-        // if we get here, the refreshToken is still valid
+        // if we get here, the refreshToken is still valid, and not expired
         // create a new accessToken for the requesting user
         const newAccessToken = generateAccessToken(user);
         // send the new accessToken to the client
@@ -176,7 +175,7 @@ app.post('/login', (req, res) => {
 
     const incomingEmail = req.body.email;
     const incomingPassword = req.body.password;
-    console.log('got incoming headers to login:', req.headers)
+    console.log('Got incoming headers to login:', req.headers)
     User.findOne({ email: incomingEmail }, async(err, returnedUser) => { 
         if (err) {
             console.log(err);
@@ -193,7 +192,7 @@ app.post('/login', (req, res) => {
                 const refreshToken = generateRefreshToken(user);
                 // push refresh token to refreshToken list (for us to maintain)
                 refreshTokens.push(refreshToken);
-                console.log('valid refresh tokens after login:', refreshTokens);
+                console.log('Valid refresh tokens after login:', refreshTokens);
                 // auth success
                 res.status(200)
                 .cookie('refreshToken', refreshToken, { // send our refresh token as an httpOnly cookie
@@ -230,10 +229,8 @@ app.get('/refreshEnabled/logout', (req, res) => {
     // extract the user's refresh token from the incoming cookie header
     const incomingCookies = req.cookies;
     const refreshToken = incomingCookies.refreshToken;
-
     // remove incoming refreshToken from our server-maintained list of refreshTokens on logout
     refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
-    
     console.log('Valid refresh tokens after logout:', refreshTokens)
     res.status(200).send('You logged out successfully.');
 
@@ -287,6 +284,7 @@ app.post('/confirmEmail', (req, res) => {
             }  
         }
     });  
+
 })
 
 // accepts an email
@@ -296,7 +294,6 @@ app.post('/confirmEmail', (req, res) => {
 app.post('/sendResetEmail', (req, res) => {
     
     const incomingEmail = req.body.email;
-
     // look for an existing user with this email
     User.find({email: incomingEmail}, (err, returnedUser) => {
         if (err) {
@@ -305,29 +302,24 @@ app.post('/sendResetEmail', (req, res) => {
         else {
             // if user was found
             if (returnedUser && returnedUser.length > 0) {
-
                 // id only, e.g. 68384242223
                 const userID = returnedUser[0]._id;
-
                 // of form { _id: 68384242223 }, to create an access token linked to this id
                 const userIDpayload = { _id: returnedUser[0]._id };
-
                 // create access token which expires in 60 seconds
                 const newAccessToken = generateAccessTokenEmail(userIDpayload);
-                console.log('generated an access token to attach to this password reset email that will last 60 second until it expires!');
-        
+                console.log('Generated an access token to attach to this password reset email that will last X seconds until it expires!');
                 // send a password reset email with the new 60 second access token as the URL parameter (this email will expire/not work when the access token attached to it expires)
                 sendPasswordResetEmail(incomingEmail, newAccessToken, userID);
-                
                 res.status(200).send('An email containing instructions on how to reset your password has been sent.');
             }
             // if no user was found
             else {
-                
                 res.status(400).send('No account was found linked to that email.');
             }   
         }
     })
+
 });
 
 // accepts a userID and a new password
@@ -378,18 +370,22 @@ app.post('/passwordChange', async(req, res) => {
 // an example route that is protected - i.e, middleware 'verifyToken' checks the incoming access token
 // if this token is valid, access to the route is given. If not, an error is returned and the route cannot be accessed until the token is refreshed
 app.get('/protected', verifyToken, (req, res) => {
+
     res.send('Your access token is valid. Hence, you can access this resource. The user requesting this was:' + JSON.stringify(req.user) + '.'); 
+
 })
 
 // an example of an unprotected route - i.e, no middleware function - no access token required
 app.get('/unprotected', (req, res) => {
+
     res.send('This is an unprotected resource.'); 
+
 })
 
 // make the server listen to a specific port (5000 in this case)
 mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => app.listen(5000, () => console.log('Server Running on Port 5000, Connected to DB')))
-  .catch((error) => console.log(`${error} did not connect`));
+  .then(() => app.listen(5000, () => console.log('Server Running on Port 5000, Connected to DB.')))
+  .catch((error) => console.log(`${error} - did not connect.`));
 
 // lets us use certain 'deprecated' mongoose operations (e.g, findOneAndModify)
 mongoose.set('useFindAndModify', false);
