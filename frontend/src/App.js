@@ -29,7 +29,7 @@ const App = () => {
   const reverseState = () => { setClicked(!clicked) }
 
   // for every time the app loads
-  // 1. get user object saved in localStorage (after logging in)
+  // 1. get user object (details + access token) saved in localStorage (after logging in)
   // 2. store this object into useContext/global state
   // 3. we can now persist login and use this user useContext/global state anywhere in the app (we can also use localStorage)
   useEffect(() => {
@@ -48,6 +48,7 @@ const App = () => {
   }, []);
 
   return (
+
     <>
     <UserContext.Provider value={[user, setUser]}>
     <Router>
@@ -64,6 +65,7 @@ const App = () => {
     </Router>
     </UserContext.Provider>
     </>
+    
   );
 }
 

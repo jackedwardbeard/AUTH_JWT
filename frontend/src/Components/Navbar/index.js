@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import './index.css'
 import logo from '../../Images/smiley.png'
 import { FaBars } from 'react-icons/fa' // mobile menu icon
@@ -10,13 +10,8 @@ import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } 
 
 const Navbar = ({reverseState}) => {
 
-    const history = useHistory();
-
     // fetch user details from global 'useContext' state
     const [user, setUser] = useContext(UserContext);
-
-    // determine whether to redirect after closing dialog pop-up or not
-    const [resStatus, setResStatus] = useState(null);
 
     // for dialog pop-ups
     const [open, setOpen] = useState(false);
@@ -29,86 +24,65 @@ const Navbar = ({reverseState}) => {
 
     // close dialog pop-up
     const handleClose = () => {
-
-        // if logout was successful, redirect to home
-        if (resStatus === 200) {
-            history.push('/');
-            setOpen(false);
-        }
-
-        else {
-            setOpen(false);
-        }
+        setOpen(false);
     }
 
     // log user out (end session)
     const logout = async(e) => {
-        
+
         e.preventDefault()
-
-        // send our refreshToken so it can be deleted when logout is successful
-        const data = {
-            token: user.refreshToken
-        }
-
-        // authorisation headers need to be included for verifyToken to work
-        const headers = {
+        // send our accessToken so our verifyToken middleware can check if we can access the route or not (if its valid, expired, or non-existent)
+        const accessToken = user.accessToken;
+        console.log('access token before logout:', accessToken);
+        // auth header allows our accessToken to be received by the server in our verifyToken function
+        const options = {
             withCredentials: true,
-            headers: { 'Authorization': 'Bearer ' + user.accessToken }
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            }
         }
-
-        await axios.post('http://localhost:5000/logout', data, headers)
-            .then(res => {
+        await axios.get('http://localhost:5000/refreshEnabled/logout', options)
+            .then((res) => {
                 console.log('Successfully logged out!');
                 setUser(null);
-                setResStatus(200);
                 localStorage.clear();
                 setDialogText('Successfully logged out!');
                 handleOpen();
             })
             .catch(async(err) => {
                 console.log(err.response);
-                
+                console.log('got hereeeee')
                 const errorStatus = err.response.status;
-
                 if (errorStatus === 403) {
-                    
                     console.log('Access token expired, attempting to use your refresh token to get you a new one!');
-
-                    const data = {
-                        token: user.refreshToken
+                    const options = {
+                        withCredentials: true
                     }
-
-                    await axios.post('http://localhost:5000/refresh', data)
+                    await axios.get('http://localhost:5000/refreshEnabled/refresh', options)
                         .then((res) => {
-                            
                             // get the newly refreshed access token
                             const newAccessToken = res.data.accessToken;
-
                             // update localStorage with the refreshed token
                             const loggedinUser = JSON.parse(localStorage.getItem('user'));
                             loggedinUser.accessToken = newAccessToken;
                             localStorage.setItem('user', JSON.stringify(loggedinUser));
-
                             // update user global state with the refreshed token
                             setUser(loggedinUser);
-
                             setDialogText('Successfully refreshed access token.');
                             handleOpen();
                         })
                         .catch((err) => {
+                            console.log('got here 3')
                             console.log(err.response);
                             setDialogText('Could not refresh access token (refresh token invalid).');
                             handleOpen();
                         })
                 }
-
                 else if (errorStatus === 401) {
                     setDialogText('You have no refresh token! Log in first.');
                     handleOpen();
                     return console.log('No refresh token detected')
                 }
-
                 else {
                     setDialogText('An error occurred.');
                     handleOpen();
@@ -119,6 +93,7 @@ const Navbar = ({reverseState}) => {
     }
 
     return (
+
         <div className='navContainer'>
             <Link className='logo_link' to='/'>
                 <img className='logo' src={logo}></img>
@@ -171,6 +146,7 @@ const Navbar = ({reverseState}) => {
                     </DialogActions>
             </Dialog>
         </div>
+
     )
 }
 

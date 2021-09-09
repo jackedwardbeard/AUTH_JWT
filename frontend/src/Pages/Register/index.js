@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import './index.css'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
@@ -32,18 +32,20 @@ const Register = () => {
 
     // close dialog pop-up
     const handleClose = () => {
+
         setOpen(false);
 
-        // if user's email has been confirmed, redirect to login
+        // if reset email sent correctly, redirect to home page after closing pop-up
         if (resStatus === 200) {
             history.push('/login');
         }
+
     }
 
     // attempt to register
     const register = async(e) => {
-        e.preventDefault();
 
+        e.preventDefault();
         const data = {
             firstName: registerFirstName,
             lastName: registerLastName,
@@ -51,7 +53,6 @@ const Register = () => {
             password: registerPassword,
             confirmPassword: registerConfirmPassword
         };
-
         await axios.post('http://localhost:5000/register', data, { withCredentials: true })
         .then((res) => {
             console.log(res);

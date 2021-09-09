@@ -24,12 +24,14 @@ const SendResetEmail = () => {
 
     // close dialog pop-up
     const handleClose = () => {
+
         setOpen(false);
 
         // if reset email sent correctly, redirect to home page after closing pop-up
         if (resStatus === 200) {
             history.push('/');
         }
+
     }
 
     const sendResetEmail = async() => {
@@ -50,7 +52,7 @@ const SendResetEmail = () => {
             setDialogText(err.response.data);
             handleOpen();
         })
-
+        
     }
 
     return (

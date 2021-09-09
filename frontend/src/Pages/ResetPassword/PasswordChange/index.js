@@ -29,12 +29,14 @@ const PasswordChange = (props) => {
 
     // close dialog pop-up
     const handleClose = () => {
+
         setOpen(false);
 
         // if password change was successful, redirect to login page
         if (resStatus === 200) {
             history.push('/login')
         }
+
     }
 
     // take input and reset the user's password to the new input
@@ -45,7 +47,6 @@ const PasswordChange = (props) => {
             'userid': userID,
             'newPassword': newPassword
         }
-
         // if passwords match
         if (newPassword === confirmNewPassword) {
             await axios.post('http://localhost:5000/passwordChange', data)
@@ -60,9 +61,7 @@ const PasswordChange = (props) => {
                 setDialogText(err.response.data);
                 handleOpen();
             })
-
         }
-
         // passwords mismatch
         else {
             setDialogText('Passwords mismatch!');

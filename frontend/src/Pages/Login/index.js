@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react'
+import React, { useState, useContext } from 'react'
 import './index.css'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
@@ -38,29 +38,26 @@ const Login = () => {
             history.push('/');
             setOpen(false);
         }
-
         else {
             setOpen(false);
         }
+
     }
 
     // log user in (create session)
     const login = async(e) => {
-        e.preventDefault()
 
+        e.preventDefault()
         const data = {
             email: loginEmail,
             password: loginPassword
         }
-
         // only allow login if a user isn't already logged in
         if (!user) {
-
-            const headers = {
-                withCredentials: true
+            const options = {
+                withCredentials: true,
             }
-            
-            await axios.post('http://localhost:5000/login', data, headers)
+            await axios.post('http://localhost:5000/login', data, options)
             .then((res) => {
                 console.log(res);
                 // save new (or overwrite if existing) user object into local storage (browser storage)
@@ -72,17 +69,17 @@ const Login = () => {
                 handleOpen();
             })
             .catch((err) => {
-                console.log(err.response);
+                console.log('got here on logon')
+                console.log(err);
                 setDialogText(err.response.data);
                 handleOpen();
             })
-           
         }
-        
         else {
             setDialogText('Log out before attempting to log in!');
             handleOpen();
         }
+
     };
 
     return (

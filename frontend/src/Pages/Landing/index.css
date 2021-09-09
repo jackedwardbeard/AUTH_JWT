@@ -1,5 +1,5 @@
 .landingTitle {
-    color: white;
+    color: rgb(209, 209, 209);
     text-align: center;
     margin-bottom: max(30px, 3vh);
     font-size: max(1.5rem, 3vmin);
@@ -9,15 +9,22 @@
     color: white;
     text-align: center;
     text-decoration: underline;
-    margin-bottom: max(30px, 3vh);
+    margin: max(10px, 1vh);
     font-size: max(1.25rem, 2.5vmin);
 }
 
 .landingSubText {
     color: white;
     text-align: center;
-    margin-bottom: max(30px, 3vh);
-    font-size: max(1rem, 2vmin);
+    margin-bottom: max(10px, 1vh);
+    font-size: max(0.75rem, 1.5vmin);
+}
+
+.landingSubTextRoutes {
+    color: white;
+    text-align: center;
+    font-size: max(0.75rem, 1.5vmin);
+    width: 70%;
 }
 
 .landingRow1 {
@@ -25,4 +32,18 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.landingRow2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.userDetailsContainer {
+    background-color: rgb(9,47,64);
+    padding: 10px;
+    outline: solid 2px black;
+    margin-bottom: 30px;
 }
