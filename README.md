@@ -14,12 +14,12 @@ You need to create a backend .env file containing values for:
 
 # Authentication Technique
 * JWT
--> User logs in. This is successful only if their details are found in the DB.
--> Upon successful login, they are sent a refresh token and an access token. 
--> The refresh token is sent as an httpOnly cookie (to prevent XSS attacks).
--> The access token is sent as part of the response body, and is stored in localStorage (since it's short lived).
--> The cookie containing the refresh token works ONLY on routes that are prefixed with /refreshEnabled. This is because when the cookie is made, we specify its route as '/refreshEnabled'. It lasts until the user logs out (the user will then keep that refresh token cookie until next time they log in, but it won't work since it'll be removed from the server when the user logs out).
--> The access token is sent with an Authorization header (e.g, Authorization: 'Bearer ' + accessToken) and can be sent to any protected route. It is short-lived, and will expire fairly quickly. It is refreshed automatically for the example protected route (e.g, if the access token is invalid and a user tries to access the protected route, they will get rejected, but the server will automatically try to refresh their access token, and then they can try again (if) it is successful in refreshing their token.
+* User logs in. This is successful only if their details are found in the DB.
+* Upon successful login, they are sent a refresh token and an access token. 
+* The refresh token is sent as an httpOnly cookie (to reduce the likelihood of, but not mitigate completely, XSS attacks).
+* The access token is sent as part of the response body, and is stored in localStorage (since it's short lived).
+* The cookie containing the refresh token works ONLY on routes that are prefixed with /refreshEnabled. This is because when the cookie is made, we specify its route as '/refreshEnabled'. It lasts until the user logs out (the user will then keep that refresh token cookie until next time they log in, but it won't work since it'll be removed from the server when the user logs out).
+* The access token is sent with an Authorization header (e.g, Authorization: 'Bearer ' + accessToken) and can be sent to any protected route. It is short-lived, and will expire fairly quickly. It is refreshed automatically for the example protected route (e.g, if the access token is invalid and a user tries to access the protected route, they will get rejected, but the server will automatically try to refresh their access token, and then they can try again (if) it is successful in refreshing their token.
 
 # Emails
 * Register/email confirmation email: this is sent when a user first registers. It will never expire, so could technically be guessed by typing 'localhost:3000/confirm/:aValidUserID', but this is okay, since 1) it's extremely unlikely to happen, and 2) even if it does happen, all the 'imposter' would be doing is helping out the person who forgot to verify their email, by verifying it for them.
@@ -42,8 +42,11 @@ You need to create a backend .env file containing values for:
 * Allows logout (deletes refresh token from server (invalidating it), and removes localStorage/user global state data which contains user details & access token).
 
 # To-Dos / Improvements
-- Somehow use JWT's instead of uuid of user for email link parameters (to stop the very small chance of being able to randomly guess a link with a user's valid uuid as the parameter).
 - Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into the any input fields.
+
+# Weaknesses
+* Access tokens are stored in localStorage. They are therefore vulnerable to XSS, but this is unlikely to occur, since they are so short lived.
+* Refresh tokens are stored in httpOnly cookies. This is slightly more secure, as scripts cannot read the cookie directly (reducing the chance of XSS attacks), but it is still possibly, as well as CSRF.
 
 # To start frontend
 ```bash
