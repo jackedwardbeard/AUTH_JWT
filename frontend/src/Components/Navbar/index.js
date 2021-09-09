@@ -51,43 +51,8 @@ const Navbar = ({reverseState}) => {
             })
             .catch(async(err) => {
                 console.log(err.response);
-                console.log('got hereeeee')
-                const errorStatus = err.response.status;
-                if (errorStatus === 403) {
-                    console.log('Access token expired, attempting to use your refresh token to get you a new one!');
-                    const options = {
-                        withCredentials: true
-                    }
-                    await axios.get('http://localhost:5000/refreshEnabled/refresh', options)
-                        .then((res) => {
-                            // get the newly refreshed access token
-                            const newAccessToken = res.data.accessToken;
-                            // update localStorage with the refreshed token
-                            const loggedinUser = JSON.parse(localStorage.getItem('user'));
-                            loggedinUser.accessToken = newAccessToken;
-                            localStorage.setItem('user', JSON.stringify(loggedinUser));
-                            // update user global state with the refreshed token
-                            setUser(loggedinUser);
-                            setDialogText('Successfully refreshed access token.');
-                            handleOpen();
-                        })
-                        .catch((err) => {
-                            console.log('got here 3')
-                            console.log(err.response);
-                            setDialogText('Could not refresh access token (refresh token invalid).');
-                            handleOpen();
-                        })
-                }
-                else if (errorStatus === 401) {
-                    setDialogText('You have no refresh token! Log in first.');
-                    handleOpen();
-                    return console.log('No refresh token detected')
-                }
-                else {
-                    setDialogText('An error occurred.');
-                    handleOpen();
-                    return console.log('An error occurred.')
-                }
+                setDialogText(err.response.data);
+                handleOpen();
             })
 
     }
