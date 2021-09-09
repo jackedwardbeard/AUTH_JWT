@@ -40,6 +40,8 @@ You need to create a backend .env file containing values for:
 * Allows persistent login (e.g, if you refresh the page after logging in, you will still be logged in, until your browser's localStorage has been cleared).
 * On login page, offers a 'forgot password?' option, which takes you to a page where you can enter an email to send a password reset email to. Following the link will take you to a page where you can reset your password (if the new password and confirmed new password match).
 * Allows logout (deletes refresh token from server (invalidating it), and removes localStorage/user global state data which contains user details & access token).
+* Has a protected route ('/protected') that requires an active access token - will automatically refresh your access token if it expires and your refresh token is still valid.
+* Has an unprotected route ('/unprotected') that does not require an access token.
 
 # To-Dos / Improvements
 - Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into the any input fields.
