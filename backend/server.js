@@ -33,7 +33,7 @@ const verifyToken = (req, res, next) => {
     if (authHeader) {
       const accessToken = authHeader.split(' ')[1];
   
-      // gets the user who owns the token by 'decode' the token with the same secret used to 'encode' it
+      // gets the user who owns the token by 'decoding' the token with the same secret used to 'encode' it
       jwt.verify(accessToken, process.env.JWT_SECRET, (err, user) => {
         
         // accessToken is no longer valid
@@ -43,7 +43,7 @@ const verifyToken = (req, res, next) => {
         }
   
         // if a user is returned, we 'decoded' the incoming accessToken and got the user behind it
-        // so we add this user information to the incoming request data
+        // so we add this user information to the incoming request data (since this is a middleware function, we pass req to the actual route once complete)
         req.user = user;
         next();
       });
