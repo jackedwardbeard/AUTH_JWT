@@ -48,7 +48,8 @@ You need to create a backend .env file containing values for:
 
 # Weaknesses
 * Access tokens are stored in localStorage. They are therefore vulnerable to XSS, but this is unlikely to occur, since they are so short lived.
-* Refresh tokens are stored in httpOnly cookies. This is slightly more secure, as scripts cannot read the cookie directly (reducing the chance of XSS attacks), but it is still possibly, as well as CSRF.
+* Refresh tokens are stored in httpOnly cookies. This is slightly more secure, as scripts cannot read the cookie directly (reducing the chance of XSS attacks), but it is still possible, as is as CSRF.
+* Along with access tokens, user details (not passwords, just things like UUID, first name, last name, and email) are also stored in local storage. This is just for ease of access, persistent login, and to avoid having to make a DB call to get these details with the UUID of that user. In an actual application, I'd likely only store the access token and user ID in local storage, and then make a DB call for the rest of the user details when necessary.
 
 # To start frontend
 ```bash
