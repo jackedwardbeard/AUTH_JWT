@@ -367,7 +367,7 @@ app.post('/passwordChange', async(req, res) => {
 
 });
 
-// an example route that is protected - i.e, middleware 'verifyToken' checks the incoming access token
+// an example route that is protected - i.e, middleware 'verifyToken' checks the incoming (req), which has the access token
 // if this token is valid, access to the route is given. If not, an error is returned and the route cannot be accessed until the token is refreshed
 app.get('/protected', verifyToken, (req, res) => {
 
