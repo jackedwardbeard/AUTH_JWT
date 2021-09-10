@@ -306,11 +306,11 @@ app.post('/sendResetEmail', (req, res) => {
                 const userID = returnedUser[0]._id;
                 // of form { _id: 68384242223 }, to create an access token linked to this id
                 const userIDpayload = { _id: returnedUser[0]._id };
-                // create access token which expires in 60 seconds
-                const newAccessToken = generateAccessTokenEmail(userIDpayload);
+                // create access token which expires in JWT_EMAIL_ACCESS_EXPIRY seconds
+                const newEmailAccessToken = generateAccessTokenEmail(userIDpayload);
                 console.log('Generated an access token to attach to this password reset email that will last X seconds until it expires!');
-                // send a password reset email with the new 60 second access token as the URL parameter (this email will expire/not work when the access token attached to it expires)
-                sendPasswordResetEmail(incomingEmail, newAccessToken, userID);
+                // send a password reset email with the new JWT_EMAIL_ACCESS_EXPIRY access token as the URL parameter (this email will expire/not work when the access token attached to it expires)
+                sendPasswordResetEmail(incomingEmail, newEmailAccessToken, userID);
                 res.status(200).send('An email containing instructions on how to reset your password has been sent.');
             }
             // if no user was found
