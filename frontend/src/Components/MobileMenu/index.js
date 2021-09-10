@@ -5,6 +5,8 @@ import axios from 'axios'
 import { UserContext } from '../../Context/User'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Drawer, List, ListItem } from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
 
 const MobileMenu = ({clicked, reverseState}) => {
 
@@ -57,32 +59,41 @@ const MobileMenu = ({clicked, reverseState}) => {
     
     return (
 
-        <div clicked={clicked} onClick={reverseState}>
-            {
-                clicked ? 
-                <div className='mobileMenuContainerClicked'>
-                    <ul className='mobileMenu'>
-                        {
-                            // if user is logged in, show home and logout links
-                            user ?
-                            <>
-                                <Link className='mobileLink' to='/' onClick={reverseState}>Home</Link>
-                                <Link className='mobileLink' onClick={logout}>Logout</Link>
-                            </>
-                            :
-                            // otherwise show home, register and login links
-                            <>
-                                <Link className='mobileLink' to='/' onClick={reverseState}>Home</Link>
-                                <Link className='mobileLink' to='/register' onClick={reverseState}>Register</Link>
-                                <Link className='mobileLink' to='/login' onClick={reverseState}>Login</Link>
-                            </>
-                        }
-                    </ul>
-                </div>
-                :
-                <div className='mobileMenuContainerNotClicked'>
-                </div>
-            }
+        <div onClick={reverseState}>
+            <Drawer open={clicked} variant='temporary'>
+                <List>
+                    {
+                        // if user is logged in, show home and logout links
+                        user ?
+                        <>
+                        <ListItem>
+                            <Link className='mobileLink' to='/' onClick={reverseState}>Home</Link>
+                        </ListItem>
+                        <Divider/>
+                        <ListItem>
+                            <Link className='mobileLink' onClick={logout}>Logout</Link>
+                        </ListItem>
+                        <Divider/>
+                        </>
+                        :
+                        // otherwise show home, register and login links
+                        <>
+                        <ListItem>
+                            <Link className='mobileLink' to='/' onClick={reverseState}>Home</Link>  
+                        </ListItem>
+                        <Divider/>
+                        <ListItem>
+                            <Link className='mobileLink' to='/register' onClick={reverseState}>Register</Link>
+                        </ListItem>
+                        <Divider/>
+                        <ListItem>
+                            <Link className='mobileLink' to='/login' onClick={reverseState}>Login</Link>
+                        </ListItem>
+                        <Divider/>
+                        </>
+                    }
+                </List>
+            </Drawer>
             <Dialog
                 open={open}
                 onClose={handleClose}

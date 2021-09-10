@@ -19,16 +19,10 @@
 }
 
 .mobileLink {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3vh;
     text-decoration: none;
-    list-style: none;
-    transition: 0.2s ease-in-out;
-    color: white;
-    cursor: pointer;
-    margin: 50px 0;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: rgb(63,81,181);
 }
 
 .mobileLink:hover {
