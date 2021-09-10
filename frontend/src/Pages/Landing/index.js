@@ -39,7 +39,7 @@ const Landing = () => {
         await axios.get('http://localhost:5000/protected',  options)
         .then((res) => {
             console.log(res);
-            setDialogText('Successfully accessed protected resources! The retrieved content is: ' + res.data);
+            setDialogText('Successfully accessed protected resource! The retrieved content is: ' + res.data);
             handleOpen();
         })
         .catch(async(err) => {
@@ -80,7 +80,7 @@ const Landing = () => {
         await axios.get('http://localhost:5000/unprotected')
         .then((res) => {
             console.log(res);
-            setDialogText('Successfully accessed unprotected resources! The retrieved content is: ' + res.data);
+            setDialogText('Successfully accessed unprotected resource! The retrieved content is: ' + res.data);
             handleOpen();
         })
         .catch((err) => {
