@@ -14,7 +14,7 @@ You need to create a backend .env file containing values for:
 
 # Authentication Technique
 * JWT
-* User logs in. This is successful only if their details are found in the DB.
+* User logs in. This is successful only if their details are found in the DB. Passwords are compared using bcrypt.js, and stored in the DB by using bcrypt's in-built hash and salt function.
 * Upon successful login, they are sent a refresh token and an access token. 
 * The refresh token is sent as an httpOnly cookie (to reduce the likelihood of, but not mitigate completely, XSS attacks).
 * The access token is sent as part of the response body, and is stored in localStorage (since it's short lived).
