@@ -49,24 +49,24 @@ const Landing = () => {
                     withCredentials: true
                 }
                 await axios.get('http://localhost:5000/refreshEnabled/refresh', options)
-                    .then((res) => {
-                        // get the newly refreshed access token
-                        const newAccessToken = res.data.accessToken;
-                        // update localStorage with the refreshed token
-                        const loggedinUser = JSON.parse(localStorage.getItem('user'));
-                        loggedinUser.accessToken = newAccessToken;
-                        localStorage.setItem('user', JSON.stringify(loggedinUser));
-                        // update user global state with the refreshed token
-                        setUser(loggedinUser);
-                        setDialogText('Successfully refreshed access token.');
-                        handleOpen();
-                    })
-                    .catch((err) => {
-                        // if we get here, we couldn't refresh our access token (invalid refresh token or no refresh token)
-                        console.log(err.response);
-                        setDialogText('Could not refresh access token (refresh token invalid).');
-                        handleOpen();
-                    })
+                .then((res) => {
+                    // get the newly refreshed access token
+                    const newAccessToken = res.data.accessToken;
+                    // update localStorage with the refreshed token
+                    const loggedinUser = JSON.parse(localStorage.getItem('user'));
+                    loggedinUser.accessToken = newAccessToken;
+                    localStorage.setItem('user', JSON.stringify(loggedinUser));
+                    // update user global state with the refreshed token
+                    setUser(loggedinUser);
+                    setDialogText('Successfully refreshed access token.');
+                    handleOpen();
+                })
+                .catch((err) => {
+                    // if we get here, we couldn't refresh our access token (invalid refresh token or no refresh token)
+                    console.log(err.response);
+                    setDialogText('Could not refresh access token (refresh token invalid).');
+                    handleOpen();
+                })
             }
             // access token is not valid, console log it
             console.log(err.response);

@@ -42,18 +42,18 @@ const Navbar = ({reverseState}) => {
             }
         }
         await axios.get('http://localhost:5000/refreshEnabled/logout', options)
-            .then((res) => {
-                console.log('Successfully logged out!');
-                setUser(null);
-                localStorage.clear();
-                setDialogText('Successfully logged out!');
-                handleOpen();
-            })
-            .catch(async(err) => {
-                console.log(err.response);
-                setDialogText(err.response.data);
-                handleOpen();
-            })
+        .then((res) => {
+            console.log('Successfully logged out!');
+            setUser(null);
+            localStorage.clear();
+            setDialogText('Successfully logged out!');
+            handleOpen();
+        })
+        .catch(async(err) => {
+            console.log(err.response);
+            setDialogText(err.response.data);
+            handleOpen();
+        })
 
     }
 
