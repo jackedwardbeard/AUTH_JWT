@@ -82,4 +82,4 @@ const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
 
 };
 
-module.exports = {sendConfirmationEmail, sendPasswordResetEmail};
+module.exports = { sendConfirmationEmail, sendPasswordResetEmail };
