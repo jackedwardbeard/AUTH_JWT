@@ -27,12 +27,14 @@ const ConfirmEmail = (props) => {
 
     // close dialog pop-up
     const handleClose = () => {
+
         setOpen(false);
 
         // if user's email has been confirmed, redirect to login
         if (resStatus === 200) {
             history.push('/login');
         }
+        
     }
 
     // confirm the given user ID's email upon button click
