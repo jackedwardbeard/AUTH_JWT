@@ -44,6 +44,7 @@ You need to create a backend .env file containing values for:
 * Has an unprotected route ('/unprotected') that does not require an access token.
 
 # To-Dos / Improvements
+- Move backend login into controller files, and import it in to each route.
 - Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into the any input fields.
 
 # Weaknesses
