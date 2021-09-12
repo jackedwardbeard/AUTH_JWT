@@ -60,7 +60,7 @@ const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
         subject: 'AUTH DEMO: You Requested A Change Of Password', // subject line
         html: `
         If it was you who requested this change,
-        <a href='${process.env.CLIENT_URL}/passwordChange/${accessToken}/${userID}'>
+        <a href='${process.env.CLIENT_URL}/passwordReset/${accessToken}/${userID}'>
           click to reset your password. 
         </a>
         Otherwise, you can ignore this email.

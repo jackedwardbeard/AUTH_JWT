@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import './index.css'
 
-const PasswordChange = (props) => {
+const PasswordReset = (props) => {
 
     // get the access token and userID, passed as parameter to this page
     const accessToken = props.match.params.token;
@@ -40,7 +40,7 @@ const PasswordChange = (props) => {
     }
 
     // take input and reset the user's password to the new input
-    const passwordChange = async() => {
+    const passwordReset = async() => {
 
         const data = {
             token: accessToken,
@@ -49,7 +49,7 @@ const PasswordChange = (props) => {
         }
         // if passwords match
         if (newPassword === confirmNewPassword) {
-            await axios.post('http://localhost:5000/passwordChange', data)
+            await axios.post('http://localhost:5000/passwordReset', data)
             .then((res) => {
                 console.log(res);
                 setResStatus(200);
@@ -74,9 +74,9 @@ const PasswordChange = (props) => {
 
         <div>
             <div className='pageContainer'>
-            <div className='passwordChangeRow1'>
+            <div className='passwordResetRow1'>
                 <p className='title'>Change Password</p>
-                <p className='passwordChangeText'>Enter a new password.</p>
+                <p className='passwordResetText'>Enter a new password.</p>
                 <input 
                     className='inputBox' 
                     type='password' 
@@ -89,7 +89,7 @@ const PasswordChange = (props) => {
                     placeholder='Confirm New Password'
                     onChange={e => setConfirmNewPassword(e.target.value)}
                 />
-                <Button variant='contained' onClick={passwordChange} style={{margin: '30px'}}>Change Password</Button>
+                <Button variant='contained' onClick={passwordReset} style={{margin: '30px'}}>Change Password</Button>
             </div>
             <Dialog
                 open={open}
@@ -113,4 +113,4 @@ const PasswordChange = (props) => {
     )
 }
 
-export default PasswordChange
+export default PasswordReset

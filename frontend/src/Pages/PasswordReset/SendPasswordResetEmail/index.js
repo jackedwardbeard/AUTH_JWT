@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import './index.css'
 
-const SendResetEmail = () => {
+const SendPasswordResetEmail = () => {
 
     const history = useHistory();
 
@@ -34,13 +34,13 @@ const SendResetEmail = () => {
 
     }
 
-    const sendResetEmail = async() => {
+    const sendPasswordResetEmail = async() => {
 
         const data = {
             email: email
         }
         // take email entered into input box
-        await axios.post('http://localhost:5000/sendResetEmail', data)
+        await axios.post('http://localhost:5000/sendPasswordResetEmail', data)
         .then((res) => {
             console.log(res);
             setResStatus(200);
@@ -59,16 +59,16 @@ const SendResetEmail = () => {
 
         <div>
             <div className='pageContainer'>
-            <div className='sendResetEmailRow1'>
+            <div className='sendPasswordResetEmailRow1'>
                 <p className='title'>Reset Password</p>
-                <p className='sendResetEmailText'>Enter the email associated with your account.</p>
+                <p className='sendPasswordResetEmailText'>Enter the email associated with your account.</p>
                 <input 
                     className='inputBox' 
                     type='text' 
                     placeholder='Email'
                     onChange={e => setEmail(e.target.value)}
                 />
-                <Button variant='contained' onClick={sendResetEmail} style={{margin: '30px'}}>Send Reset Email</Button>
+                <Button variant='contained' onClick={sendPasswordResetEmail} style={{margin: '30px'}}>Send Reset Email</Button>
             </div>
             <Dialog
                 open={open}
@@ -92,4 +92,4 @@ const SendResetEmail = () => {
     )
 }
 
-export default SendResetEmail
+export default SendPasswordResetEmail

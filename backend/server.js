@@ -75,7 +75,7 @@ const generateAccessToken = (user) => {
 
 };
 
-// generate access token for password reset email
+// generate access token for making password reset and email confirmation emails expire along with the token
 const generateAccessTokenEmail = (userIDpayload) => {
 
     const expiresIn = {
@@ -131,6 +131,15 @@ app.get('/refreshEnabled/refresh', (req, res) => {
 
 });
 
+
+// accepts a first name, last name, email, password and confirmed password - registers the given details into the DB, if the email isn't taken
+// e.g. data = {
+//          'firstName': example,
+//          'lastName': example,
+//          'email': example,
+//          'password': example,
+//          'confirmPassword': example
+//          }
 app.post('/register', (req, res) => {
 
     const incomingEmail = req.body.email;
@@ -179,6 +188,11 @@ app.post('/register', (req, res) => {
 
 })
 
+// accepts an email and a password - logs the user in & sends them their user details + access token, and a cookie containing a refresh token
+// e.g. data = {
+//    'email': 'email@example.com',
+//    'password': example
+//     }
 app.post('/login', (req, res) => {
 
     const incomingEmail = req.body.email;
@@ -262,10 +276,10 @@ app.get('/refreshEnabled/logout', (req, res) => {
 
 });
 
-// once the button for email confirmation is clicked, update the DB to mark the user's email as confirmed
-// accepts a userid
+// accepts a userid and an access token (to determine if the link is valid anymore) - marks a user's confirmedEmail field as 'true'
 // e.g. data = {
-//      'userid': userid
+//      'userid': userid,
+//      'token': accessToken
 //    }
 app.post('/confirmEmail', (req, res) => {
 
@@ -330,7 +344,7 @@ app.post('/confirmEmail', (req, res) => {
                             // if the user hasn't confirmed their email
                             else {
                                 console.log(returnedUser);
-                                res.status(400).send('Link has expired and account is unconfirmed, deleting the account for security purposes... If this is your email, you can register again, and make sure to confirm your email before the link expires!');
+                                res.status(400).send('Link has expired and account is unconfirmed, deleting the account for security purposes... If this is your email, you can register again. Just make sure to confirm your email before the link expires!');
                             }
                             }
                         );
@@ -351,11 +365,11 @@ app.post('/confirmEmail', (req, res) => {
 
 })
 
-// accepts an email
+// accepts an email - sends a password reset email
 // e.g. data = {
 //      'email': email 
 //   }
-app.post('/sendResetEmail', (req, res) => {
+app.post('/sendPasswordResetEmail', (req, res) => {
     
     const incomingEmail = req.body.email;
     // look for an existing user with this email
@@ -386,12 +400,12 @@ app.post('/sendResetEmail', (req, res) => {
 
 });
 
-// accepts a userID and a new password
+// accepts a userID and a new password - changes the password of that user
 // e.g. data = {
 //    'userid': userid,
 //    'newPassword': newPassword
 //    }
-app.post('/passwordChange', async(req, res) => {
+app.post('/passwordReset', async(req, res) => {
     
     const accessToken = req.body.token;
     const userID = req.body.userid;

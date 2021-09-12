@@ -9,8 +9,8 @@ import {
   Login,
   Register,
   ConfirmEmail,
-  SendResetEmail,
-  PasswordChange
+  SendPasswordResetEmail,
+  PasswordReset
 } from './Pages/PageExports'
 import {
   Navbar,
@@ -58,8 +58,8 @@ const App = () => {
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>
         <Route path='/confirm/:token/:userid' component={ConfirmEmail}/>
-        <Route path='/sendResetEmail' component={SendResetEmail}/>
-        <Route path='/passwordChange/:token/:userid' component={PasswordChange}/>
+        <Route path='/sendPasswordResetEmail' component={SendPasswordResetEmail}/>
+        <Route path='/passwordReset/:token/:userid' component={PasswordReset}/>
         <Route path='/' component={Landing}/>
       </Switch>
     </Router>

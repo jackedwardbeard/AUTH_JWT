@@ -58,7 +58,7 @@ const Landing = () => {
                     localStorage.setItem('user', JSON.stringify(loggedinUser));
                     // update user global state with the refreshed token
                     setUser(loggedinUser);
-                    setDialogText('Successfully refreshed access token.');
+                    setDialogText('Access token expired. Automatically refreshed your access token...');
                     handleOpen();
                 })
                 .catch((err) => {

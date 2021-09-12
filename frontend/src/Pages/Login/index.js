@@ -103,7 +103,7 @@ const Login = () => {
             />
             <Button variant='contained' onClick={login} style={{margin: '30px'}}>Login</Button>
             <Link className='link' to='/register' style={{margin: '5px'}}>Not a member? Register now.</Link>
-            <Link className='link' to='/sendResetEmail' style={{margin: '5px'}}>Forgot your password?</Link>
+            <Link className='link' to='/sendPasswordResetEmail' style={{margin: '5px'}}>Forgot your password?</Link>
         </form>
         <Dialog
                 open={open}
