@@ -37,11 +37,11 @@ You need to create a backend .env file containing values for:
 * Upon successful register (successful if provided email isn't taken/found in DB), send a confirmation email to the given email address
 * Following the link in the confirmation email brings you to a confirmation page, where you can click a button to confirm your email
 * Successfully confirmation of your email will redirect you to the login page, whilst an unsucessful confirmation (i.e., already confirmed, or no user found for given ID) will leave you on the confirmation page. Attempting to confirm your email with an expired link (and unconfirmed account), will delete the account from the DB for security purposes.
-* Allows local login (successful if email/password combination is found in DB).
 * If your account is deleted in this manner, you can simply register again if you're the legitimate owner of the email. It is merely to stop random people from signing up and confirming your account with a guessed confirmation URL.
 * If you realise you haven't confirmed your account in time, and haven't attempted to use an old confirmation link, you can just attempt to login with the appropriate email (assuming you know your password), and a new confirmation link will be sent to you.
+* Allows local login (successful if email/password combination is found in DB).
 * Allows persistent login (e.g, if you refresh the page after logging in, you will still be logged in, until your browser's localStorage has been cleared).
-* On login page, offers a 'forgot password?' option, which takes you to a page where you can enter an email to send a password reset email to. Following the link will take you to a page where you can reset your password (if the new password and confirmed new password match).
+* On login page, offers a 'forgot password?' option, which takes you to a page where you can enter an email to send a password reset email to. Following the link will take you to a page where you can reset your password (if the new password and confirmed new password match, and the link is still valid).
 * Allows logout (deletes refresh token from server (invalidating it), and removes localStorage/user global state data which contains user details & access token).
 * Has a protected route ('/protected') that requires an active access token - will automatically refresh your access token if it expires and your refresh token is still valid.
 * Has an unprotected route ('/unprotected') that does not require an access token.
