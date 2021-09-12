@@ -8,8 +8,8 @@ You need to create a backend .env file containing values for:
 * EMAIL_USER=yourGmailAddress
 * EMAIL_PASS=yourGmailPassword
 * JWT_ACCESS_EXPIRY=expiryTimeOfRegularAccessTokens
-* JWT_ACCESS_EXPIRY=expiryTimeOfEmailAccessTokens
-* JWT_SECRET=yourJWTAccessTokenSecret
+* JWT_EMAIL_ACCESS_EXPIRY=expiryTimeOfEmailAccessTokens
+* JWT_ACCESS_SECRET=yourJWTAccessTokenSecret
 * JWT_REFRESH_SECRET=yourJWTRefreshTokenSecret
 
 # Authentication Technique
