@@ -295,7 +295,7 @@ app.post('/sendResetEmail', (req, res) => {
     
     const incomingEmail = req.body.email;
     // look for an existing user with this email
-    User.find({email: incomingEmail}, (err, returnedUser) => {
+    User.findOne({email: incomingEmail}, (err, returnedUser) => {
         if (err) {
             res.status(400).send('An error occured.');
         }
@@ -303,9 +303,9 @@ app.post('/sendResetEmail', (req, res) => {
             // if user was found
             if (returnedUser && returnedUser.length > 0) {
                 // id only, e.g. 68384242223
-                const userID = returnedUser[0]._id;
+                const userID = returnedUser._id;
                 // of form { _id: 68384242223 }, to create an access token linked to this id
-                const userIDpayload = { _id: returnedUser[0]._id };
+                const userIDpayload = { _id: returnedUser._id };
                 // create access token which expires in JWT_EMAIL_ACCESS_EXPIRY seconds
                 const newEmailAccessToken = generateAccessTokenEmail(userIDpayload);
                 console.log('Generated an access token to attach to this password reset email that will last X seconds until it expires!');
