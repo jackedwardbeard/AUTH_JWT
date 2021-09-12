@@ -301,7 +301,7 @@ app.post('/sendResetEmail', (req, res) => {
         }
         else {
             // if user was found
-            if (returnedUser && returnedUser.length > 0) {
+            if (returnedUser) {
                 // id only, e.g. 68384242223
                 const userID = returnedUser._id;
                 // of form { _id: 68384242223 }, to create an access token linked to this id
