@@ -48,7 +48,7 @@ You need to create a backend .env file containing values for:
 
 # To-Dos / Improvements
 - Move backend login into controller files, and import it in to each route.
-- Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into the any input fields.
+- Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into any input field.
 
 # Weaknesses
 * Access tokens are stored in localStorage. They are therefore vulnerable to XSS, but this is unlikely to occur, since they are so short lived.
