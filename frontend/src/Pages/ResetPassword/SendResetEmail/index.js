@@ -37,7 +37,7 @@ const SendResetEmail = () => {
     const sendResetEmail = async() => {
 
         const data = {
-            'email': email
+            email: email
         }
         // take email entered into input box
         await axios.post('http://localhost:5000/sendResetEmail', data)

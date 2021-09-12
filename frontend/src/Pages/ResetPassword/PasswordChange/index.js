@@ -43,9 +43,9 @@ const PasswordChange = (props) => {
     const passwordChange = async() => {
 
         const data = {
-            'token': accessToken,
-            'userid': userID,
-            'newPassword': newPassword
+            token: accessToken,
+            userid: userID,
+            newPassword: newPassword
         }
         // if passwords match
         if (newPassword === confirmNewPassword) {
