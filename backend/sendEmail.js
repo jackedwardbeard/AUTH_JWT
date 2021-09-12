@@ -28,19 +28,17 @@ const sendConfirmationEmail = (emailAddress, userID) => {
 
     // send the email
     smtpTransport.sendMail(email, function (err, res) {
-
         // if unsuccessful
         if (err) {
             console.log(error);
         }
-
         // if successful
         else {
             console.log('Email sent successfully');
         }
-
         smtpTransport.close();
     });
+    
 };
 
 // send an email to confirm the new user's email address
@@ -71,19 +69,17 @@ const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
 
     // send the email
     smtpTransport.sendMail(email, (err, res) => {
-
         // if unsuccessful
         if (err) {
             console.log(error);
         }
-
         // if successful
         else {
             console.log('Email sent successfully!');
         }
-
         smtpTransport.close();
     });
+
 };
 
 module.exports = {sendConfirmationEmail, sendPasswordResetEmail};
