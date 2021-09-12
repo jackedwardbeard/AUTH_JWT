@@ -57,7 +57,7 @@ const App = () => {
       <Switch>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>
-        <Route path='/confirm/:userid' component={ConfirmEmail}/>
+        <Route path='/confirm/:token/:userid' component={ConfirmEmail}/>
         <Route path='/sendResetEmail' component={SendResetEmail}/>
         <Route path='/passwordChange/:token/:userid' component={PasswordChange}/>
         <Route path='/' component={Landing}/>

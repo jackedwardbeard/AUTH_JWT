@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 // send an email to confirm the new user's email address
-const sendConfirmationEmail = (emailAddress, userID) => {
+const sendConfirmationEmail = (emailAddress, accessToken, userID) => {
 
     // smtp is used to send the email, with the given credentials as the sender
     const smtpTransport = nodemailer.createTransport({
@@ -19,7 +19,7 @@ const sendConfirmationEmail = (emailAddress, userID) => {
         subject: 'AUTH DEMO: Confirm Your Email', // subject line
         html: `
         Thanks for registering. To finalise the process,
-        <a href='${process.env.CLIENT_URL}/confirm/${userID}'>
+        <a href='${process.env.CLIENT_URL}/confirm/${accessToken}/${userID}'>
           click to confirm your email address. 
         </a>
         If this wasn't you, ignore this email.

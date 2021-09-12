@@ -133,8 +133,9 @@ app.get('/refreshEnabled/refresh', (req, res) => {
 
 app.post('/register', (req, res) => {
 
+    const incomingEmail = req.body.email;
     // check if a user with the given email already exists
-    User.findOne({ email: req.body.email }, async(err, returnedUser) => {
+    User.findOne({ email: incomingEmail }, async(err, returnedUser) => {
         if (err) {
             res.status(400).refreshTokenssend(err);
         };
@@ -153,15 +154,22 @@ app.post('/register', (req, res) => {
                 const newUser = new User({
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
-                    email: req.body.email,
+                    email: incomingEmail,
                     password: hashedPword,
                     confirmedEmail: false
                 });
                 // save new user into DB
                 const savedNewUser = await newUser.save();
+                // id only, e.g. 68384242223
+                const userID = savedNewUser._id;
+                // of form { _id: 68384242223 }, to create an access token linked to this id
+                const userIDpayload = { _id: savedNewUser._id };
+                // create access token which expires in JWT_EMAIL_ACCESS_EXPIRY seconds
+                const newEmailAccessToken = generateAccessTokenEmail(userIDpayload);
+                console.log('Generated an access token to attach to this email confirmation email that will last X seconds until it expires!');
                 // send confirmation email
-                sendConfirmationEmail(req.body.email, savedNewUser._id);
-                res.status(200).send('Registered into DB successfully!');
+                sendConfirmationEmail(incomingEmail, newEmailAccessToken, userID);
+                res.status(200).send('Registered into DB successfully! You have JWT_EMAIL_ACCESS_EXPIRY time to confirm your account before the confirmation link expires. If you take longer, your account will be deleted upon trying to confirm it, and you will need to register again.');
             }
             else {
                 res.status(400).send('Passwords mismatch! Could not register.')
@@ -181,43 +189,61 @@ app.post('/login', (req, res) => {
             console.log(err);
             return [returnedUser, match];
         }
+        // only allow login if the email for the given account is confirmed (to prevent imposters)
         if (returnedUser) {
             // get returned user object and password match (true/false)
             const user = returnedUser;
             const match = await bcrypt.compare(incomingPassword, user.password);
-            // if password is correct
+            // if password is correct, check to see if their email is already confirmed or not
             if (match === true) {
-                // generate a new JWT and a JWT_Refresh token on login
-                const accessToken = generateAccessToken(user);
-                const refreshToken = generateRefreshToken(user);
-                // push refresh token to refreshToken list (for us to maintain)
-                refreshTokens.push(refreshToken);
-                console.log('Valid refresh tokens after login:', refreshTokens);
-                // auth success
-                res.status(200)
-                .cookie('refreshToken', refreshToken, { // send our refresh token as an httpOnly cookie
-                    httpOnly: true, // means javascript can't access the cookie (i.e., our refresh token will be safe from XSS attacks)
-                    overwrite: true, // overwrites any previous cookie with the same name
-                    path: '/refreshEnabled', // ensures cookies containing the refresh token are only ever allowed to be sent to routes beginning with /refreshEnabled
-                    secure: process.env.NODE_ENV !== 'development' // use httpOnly in production
-                })
-                .send({ // send our user details and access token as JSON (to store in the browser's localStorage)
-                    userid: user._id,
-                    email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    confirmedEmail: user.confirmedEmail,
-                    accessToken: accessToken,
+                // if user is confirmed, allow login
+                if (returnedUser.confirmedEmail === true) {
+                    // generate a new JWT and a JWT_Refresh token on login
+                    const accessToken = generateAccessToken(user);
+                    const refreshToken = generateRefreshToken(user);
+                    // push refresh token to refreshToken list (for us to maintain)
+                    refreshTokens.push(refreshToken);
+                    console.log('Valid refresh tokens after login:', refreshTokens);
+                    // auth success
+                    res.status(200)
+                    .cookie('refreshToken', refreshToken, { // send our refresh token as an httpOnly cookie
+                        httpOnly: true, // means javascript can't access the cookie (i.e., our refresh token will be safe from XSS attacks)
+                        overwrite: true, // overwrites any previous cookie with the same name
+                        path: '/refreshEnabled', // ensures cookies containing the refresh token are only ever allowed to be sent to routes beginning with /refreshEnabled
+                        secure: process.env.NODE_ENV !== 'development' // use httpOnly in production
                     })
+                    .send({ // send our user details and access token as JSON (to store in the browser's localStorage)
+                        userid: user._id,
+                        email: user.email,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        confirmedEmail: user.confirmedEmail,
+                        accessToken: accessToken,
+                        })
+                }
+                // if user is unconfirmed, send another confirmation email
+                else {
+                    // id only, e.g. 68384242223
+                    const userID = user._id;
+                    // of form { _id: 68384242223 }, to create an access token linked to this id
+                    const userIDpayload = { _id: user._id };
+                    // create access token which expires in JWT_EMAIL_ACCESS_EXPIRY seconds
+                    const newEmailAccessToken = generateAccessTokenEmail(userIDpayload);
+                    console.log('Generated an access token to attach to this email confirmation email that will last X seconds until it expires!');
+                    // send confirmation email
+                    sendConfirmationEmail(incomingEmail, newEmailAccessToken, userID);
+                    res.status(400).send('Your email is unconfirmed. Please check your inbox for a new confirmation email.');
+                }
+                
             }
-            // password incorrect
+            // email correct, password incorrect
             else {
-                res.status(400).send('Invalid email or password.');
+                res.status(400).send('Your password is incorrect.');
             } 
         }
-        // email incorrect
-        else {
-            res.status(400).send('Invalid email or password.');
+        // email not registered
+        else if (!returnedUser) {
+            res.status(400).send('Your email is incorrect.');
         }
     });
 
@@ -244,39 +270,77 @@ app.get('/refreshEnabled/logout', (req, res) => {
 app.post('/confirmEmail', (req, res) => {
 
     const incomingUserID = req.body.userid;
+    const incomingAccessToken = req.body.token;
+    const validAccessToken = jwt.verify(incomingAccessToken, process.env.JWT_ACCESS_SECRET, (err, user) => {
+        if (err) {
+            return false; // access token not valid/has expired, so link is not valid
+        }
+        else {
+            return true; // access token is valid/has not expired, so link is valid
+        }
+    })
     console.log('Got incoming ID for email confirmation:', req.body);
-    // if email hasn't been confirmed
+    // find user with incomingID
     User.findById(incomingUserID, (err, result) => {
         if (err) {
             res.status(400).send(err);
         }
         else {
             if (result) {
-                // bool that says whether found user has confirmed their email or not
-                const confirmedEmail = result.confirmedEmail;
-                // only update if email isn't already confirmed
-                if (confirmedEmail === false) {
-                    User.findByIdAndUpdate(
-                        { _id: incomingUserID },
-                        { confirmedEmail: true },
-                        (err, returnedUser) => {
-                        // some other error occurred
-                        if (err) {
-                            console.log(err);
-                            res.status(400).send(err);
-                        } 
-                        // if the user hasn't confirmed their email
-                        else {
-                            console.log(returnedUser);
-                            res.status(200).send('Email successfully confirmed!');
-                        }
-                        }
-                    );
+                // if access token is still valid, link is valid, confirm their email
+                if (validAccessToken === true) {
+                    const confirmedEmail = result.confirmedEmail;
+                    // only update if email isn't already confirmed
+                    if (confirmedEmail === false ) {
+                        User.findByIdAndUpdate(
+                            { _id: incomingUserID },
+                            { confirmedEmail: true },
+                            (err, returnedUser) => {
+                            // some other error occurred
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send(err);
+                            } 
+                            // if the user hasn't confirmed their email
+                            else {
+                                console.log(returnedUser);
+                                res.status(200).send('Email successfully confirmed!');
+                            }
+                            }
+                        );
+                    }
+                    // if it has been confirmed already
+                    else {
+                        res.status(400).send('Email already confirmed!');
+                    }
                 }
-                // if it has been confirmed already
-                else {
-                    res.status(400).send('Email already confirmed!');
+                // if access token is not valid (link has expired) and email is not confirmed yet, delete this unconfirmed account from DB (to stop imposters signing up and guessing confirmation links of random emails)
+                else if (validAccessToken === false) {
+                    const confirmedEmail = result.confirmedEmail;
+                    // if email isn't confirmed, and access token has expired, delete the existing unconfirmed account
+                    if (confirmedEmail === false ) {
+                        User.findOneAndDelete(
+                            { _id: incomingUserID },
+                            (err, returnedUser) => {
+                            // some other error occurred
+                            if (err) {
+                                console.log(err);
+                                res.status(400).send(err);
+                            } 
+                            // if the user hasn't confirmed their email
+                            else {
+                                console.log(returnedUser);
+                                res.status(400).send('Link has expired and account is unconfirmed, deleting the account for security purposes... If this is your email, you can register again, and make sure to confirm your email before the link expires!');
+                            }
+                            }
+                        );
+                    }
+                    // if it has been confirmed already and the link is invalid, it's all good, just tell them they've already confirmed their email
+                    else {
+                        res.status(400).send('Email already confirmed!');
+                    }
                 }
+                
             }
             // no result, no user found
             else {
