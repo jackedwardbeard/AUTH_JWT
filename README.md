@@ -18,7 +18,7 @@ You need to create a backend .env file containing values for:
 * Upon successful login, they are sent a refresh token and an access token. 
 * The refresh token is sent as an httpOnly cookie (to reduce the likelihood of, but not mitigate completely, XSS attacks).
 * The access token is sent as part of the response body, and is stored in localStorage (since it's short lived).
-* The cookie containing the refresh token works ONLY on routes that are prefixed with /refreshEnabled. This is because when the cookie is made, we specify its route as '/refreshEnabled'. It lasts until the user logs out (the user will then keep that refresh token cookie until next time they log in, but it won't work since it'll be removed from the server when the user logs out).
+* The cookie containing the refresh token works ONLY on routes that are prefixed with /refreshEnabled. This is because when the cookie is made, we specify its route as '/refreshEnabled'. Basically, its path dictates which routes can 'see' the refreshToken cookie in req.cookies (cookie-parser). It lasts until the user logs out (the user will then keep that refresh token cookie until next time they log in, but it won't work since it'll be removed from the server when the user logs out).
 * The access token is sent with an Authorization header (e.g, Authorization: 'Bearer ' + accessToken) and can be sent to any protected route. It is short-lived, and will expire fairly quickly. It is refreshed automatically for the example protected route (e.g, if the access token is invalid and a user tries to access the protected route, they will get rejected, but the server will automatically try to refresh their access token, and then they can try again (if) it is successful in refreshing their token).
 
 # Emails
