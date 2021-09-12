@@ -41,7 +41,7 @@ const sendConfirmationEmail = (emailAddress, userID) => {
     
 };
 
-// send an email to confirm the new user's email address
+// send an email to reset the user's password
 const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
 
     // smtp is used to send the email, with the given credentials as the sender
