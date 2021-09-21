@@ -226,14 +226,7 @@ app.post('/login', (req, res) => {
                         path: '/refreshEnabled', // ensures cookies containing the refresh token are only ever allowed to be sent to routes beginning with /refreshEnabled
                         secure: process.env.NODE_ENV !== 'development' // use httpOnly in production
                     })
-                    .send({ // send our user details and access token as JSON (to store in the browser's localStorage)
-                        userid: user._id,
-                        email: user.email,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        confirmedEmail: user.confirmedEmail,
-                        accessToken: accessToken,
-                        })
+                    .send({accessToken: accessToken}) // just send an accessToken to the user - this will be used to fetch their details from the DB (it has their id inside it, once decoded with jwt.verify)
                 }
                 // if user is unconfirmed, send another confirmation email
                 else {
@@ -457,6 +450,41 @@ app.get('/protected', verifyToken, (req, res) => {
 app.get('/unprotected', (req, res) => {
 
     res.send('This is an unprotected resource.'); 
+
+})
+
+app.get('/getUser', verifyToken, (req, res) => {
+
+    // req.user is set in our 'verifyToken' middleware function once jwt.verify has run on the access token (it will return something like { _id: '61499e533db6755f00bc55cb', iat: 1632221068, exp: 1632221088 })
+    const incomingUser = req.user; 
+
+    // if incoming access token to this endpoint exists and hasn't expired, return details of that user
+    if (incomingUser) {
+        console.log('Decoded the following information from the incoming access token:', incomingUser);
+        const incomingUserID = incomingUser._id;
+        User.findOne({ _id: incomingUserID }, async(err, returnedUser) => { 
+            if (err) {
+                res.status(400).send('Error when trying to find user with that ID.');
+            }
+            if (returnedUser) {
+                const userDetailsMinusThePassword = {
+                    firstName: returnedUser.firstName,
+                    lastName: returnedUser.lastName,
+                    email: returnedUser.email,
+                    confirmedEmail: returnedUser.confirmedEmail
+                }
+                res.status(200).send(userDetailsMinusThePassword); // send the object of the user
+            }
+            else {
+                res.status(400).send('Could not find that user.')
+            }
+        })
+    }
+    // otherwise, there is no access token in the incoming request (e.g., manually deleted from local storage)
+    else {
+        console.log('No incoming access token detected!')
+        res.status(403).send()
+    }
 
 })
 

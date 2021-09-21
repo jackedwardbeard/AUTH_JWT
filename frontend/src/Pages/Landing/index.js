@@ -28,7 +28,8 @@ const Landing = () => {
     const accessProtectedRoute = async() => {
 
         // get access token from localStorage
-        const accessToken = user.accessToken;
+        const accessTokenNotJSON = localStorage.getItem('accessToken');
+        const accessToken = JSON.parse(accessTokenNotJSON);
         // allows us to send an access token
         const options = {
             withCredentials: true,
@@ -53,12 +54,8 @@ const Landing = () => {
                     // get the newly refreshed access token
                     const newAccessToken = res.data.accessToken;
                     // update localStorage with the refreshed token
-                    const loggedinUser = JSON.parse(localStorage.getItem('user'));
-                    loggedinUser.accessToken = newAccessToken;
-                    localStorage.setItem('user', JSON.stringify(loggedinUser));
-                    // update user global state with the refreshed token
-                    setUser(loggedinUser);
-                    setDialogText('Access token expired. Automatically refreshed your access token...');
+                    localStorage.setItem('accessToken', JSON.stringify(newAccessToken));
+                    setDialogText('Access token expired. Automatically refreshed your access token... Try accessing the protected resource before it expires again.');
                     handleOpen();
                 })
                 .catch((err) => {
