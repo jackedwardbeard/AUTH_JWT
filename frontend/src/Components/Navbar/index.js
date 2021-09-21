@@ -31,15 +31,9 @@ const Navbar = ({reverseState}) => {
     const logout = async(e) => {
 
         e.preventDefault()
-        // send our accessToken so our verifyToken middleware can check if we can access the route or not (if its valid, expired, or non-existent)
-        const accessToken = user.accessToken;
-        console.log('access token before logout:', accessToken);
-        // auth header allows our accessToken to be received by the server in our verifyToken function
+        // lets us send the refreshToken cookie in req.cookies
         const options = {
             withCredentials: true,
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            }
         }
         await axios.get('http://localhost:5000/refreshEnabled/logout', options)
         .then((res) => {
