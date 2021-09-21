@@ -35,14 +35,14 @@ You need to create a backend .env file containing values for:
 # Login Persistence
 
 Every time the app loads:
-* 1. check browser local storage for access token
-* 1.1. if it's not there, attempt to refresh a new access token, then repeat steps (2.2.3) to (2.2.5)
-* 2. if it is there, try to get the details of the user attached to it (through the /getUser endpoint - which has middleware that will check validity of access token)
-* 2.1. if the accessToken is valid, user details are returned and stored into 'user' context
-* 2.2. if the access token is there, but not valid (i.e., expired), attempt to refresh access token
-* 2.2.3. if refresh token is present in cookies and is valid, refresh access token, getUser details again, store them into 'user' context
-* 2.2.4. if refresh token is present in cookies but NOT valid, force log the user out (set user context to null and clear localStorage of accessTokens)
-* 2.2.5. if refresh token is not present in cookies, force log the user out (set user context to null and clear localStorage of accessTokens)
+* 1) check browser local storage for access token
+* 1.1) if it's not there, attempt to refresh a new access token, then repeat steps (2.2.3) to (2.2.5)
+* 2) if it is there, try to get the details of the user attached to it (through the /getUser endpoint - which has middleware that will check validity of access token)
+* 2.1) if the accessToken is valid, user details are returned and stored into 'user' context
+* 2.2) if the access token is there, but not valid (i.e., expired), attempt to refresh access token
+* 2.2.3) if refresh token is present in cookies and is valid, refresh access token, getUser details again, store them into 'user' context
+* 2.2.4) if refresh token is present in cookies but NOT valid, force log the user out (set user context to null and clear localStorage of accessTokens)
+* 2.2.5) if refresh token is not present in cookies, force log the user out (set user context to null and clear localStorage of accessTokens)
 
 # What it does so far
 * Allows local register
