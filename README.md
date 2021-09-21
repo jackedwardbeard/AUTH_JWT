@@ -34,15 +34,27 @@ You need to create a backend .env file containing values for:
 
 # Login Persistence
 
-Every time the app loads:
-* 1) check browser local storage for access token
-* 1.1) if it's not there, attempt to refresh a new access token, then repeat steps (2.2.3) to (2.2.5)
-* 2) if it is there, try to get the details of the user attached to it (through the /getUser endpoint - which has middleware that will check validity of access token)
-* 2.1) if the accessToken is valid, user details are returned and stored into 'user' context
-* 2.2) if the access token is there, but not valid (i.e., expired), attempt to refresh access token
-* 2.2.3) if refresh token is present in cookies and is valid, refresh access token, getUser details again, store them into 'user' context
-* 2.2.4) if refresh token is present in cookies but NOT valid, force log the user out (set user context to null and clear localStorage of accessTokens)
-* 2.2.5) if refresh token is not present in cookies, force log the user out (set user context to null and clear localStorage of accessTokens)
+When we login, we:
+
+1 - have an accessToken stored into our localStorage and a refresh token stored into our cookies, as an httpOnly cookie
+2 - hit the /getUser endpoint (refreshEnabled) and use that access token to get the details of the user associated with the userID stored in the accessToken
+3 - these details are stored into context called 'user'
+
+Since we can't just do that once, because context will disappear on page refreshes, 
+every time the app loads, a useEffect function performs the following:
+
+1 - check browser local storage for access token
+1.1 - if it's not there, attempt to refresh a new access token, then repeat steps (2.2.3) to (2.2.5)
+2 - if it is there, try to get the details of the user attached to it (through the /getUser endpoint - which has middleware that will check validity of access token)
+2.1 - if the accessToken is valid, user details are returned and stored into 'user' context
+2.2 - if the access token is there, but not valid (i.e., expired), attempt to refresh access token
+2.2.3 - if refresh token is present in cookies and is valid, refresh access token, getUser details again, store them into 'user' context
+2.2.4 - if refresh token is present in cookies but NOT valid, force log the user out (set user context to null and clear localStorage of accessTokens)
+2.2.5 - if refresh token is not present in cookies, force log the user out (set user context to null and clear localStorage of accessTokens)
+
+This means as long as there is a valid access token, user login will always persist.
+This means as long as there is a valid refreshToken, login will always persist, as invalid access tokens can simply be refreshed for a new one.
+When there is an invalid/missing access token AND an invalid/missing refresh token, then login persistence stops, and the user is force logged out.
 
 # What it does so far
 * Allows local register
