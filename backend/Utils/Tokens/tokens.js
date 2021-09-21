@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken'); // lets us use JWT's
 
-// takes an incoming token and determines if it's valid (i.e. hasn't expired if access, hasn't been removed if refresh)
+// middleware function that takes an incoming token and determines if it's valid (i.e. hasn't expired - so only for access tokens at the moment)
 const verifyToken = (req, res, next) => {
 
     // the accessToken is stored in the auth header of the incoming request
