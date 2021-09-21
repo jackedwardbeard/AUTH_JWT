@@ -71,7 +71,6 @@ When there is an invalid/missing access token AND an invalid/missing refresh tok
 * Has an unprotected route ('/unprotected') that does not require an access token.
 
 # To-Dos / Improvements
-- Move backend login into controller files, and import it in to each route.
 - Add input validation (not the focus of this repo, so I probably won't implement this). Currently you can enter anything into any input field.
 
 # Weaknesses
