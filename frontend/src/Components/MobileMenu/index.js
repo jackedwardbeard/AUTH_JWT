@@ -28,8 +28,8 @@ const MobileMenu = ({clicked, reverseState}) => {
     }
 
     // log user out (end session)
-    const handleLogout = () => {
-        logout({setUser, setDialogText, handleOpen});
+    const handleLogout = (e) => {
+        logout(e, {setUser, setDialogText, handleOpen});
     }
     
     return (

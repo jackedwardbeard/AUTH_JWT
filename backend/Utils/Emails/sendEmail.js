@@ -30,7 +30,7 @@ const sendConfirmationEmail = (emailAddress, accessToken, userID) => {
     smtpTransport.sendMail(email, function (err, res) {
         // if unsuccessful
         if (err) {
-            console.log(error);
+            console.log(err);
         }
         // if successful
         else {
@@ -71,7 +71,7 @@ const sendPasswordResetEmail = (emailAddress, accessToken, userID) => {
     smtpTransport.sendMail(email, (err, res) => {
         // if unsuccessful
         if (err) {
-            console.log(error);
+            console.log(err);
         }
         // if successful
         else {

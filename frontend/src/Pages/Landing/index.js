@@ -26,8 +26,8 @@ const Landing = () => {
     }
 
     // this backend route expects a valid access token, otherwise access will be denied
-    const handleAccessProtectedRoute = () => {
-        accessProtectedRoute({setDialogText, handleOpen});
+    const handleAccessProtectedRoute = (e) => {
+        accessProtectedRoute(e, {setUser, setDialogText, handleOpen});
     }
 
     // no access token is needed to access this resource
@@ -64,7 +64,7 @@ const Landing = () => {
                 {
                     user ? 
                     <>
-                    <p className='landingSubTextRoutes'>To access this resource, your access token needs to be valid (i.e, not expired). If expired, a dialog will pop-up notifying you of this, and the server will automatically get you a new one (assuming your refresh token is valid). If you don't get a new one, you'll have to login again to get a new refresh and access token.</p>
+                    <p className='landingSubTextRoutes'>To access this resource, your access token needs to be valid (i.e, not expired). If expired, a dialog will pop-up notifying you of this, and the server will automatically get you a new one (assuming your refresh token is valid). If you don't get a new one (i.e., your refresh token isn't valid, you'll be logged out).</p>
                     <Button onClick={handleAccessProtectedRoute} variant='contained' style={{margin: 'max(30px, 3vh) 0', fontWeight: 'bold'}}>
                         Access Protected Route
                     </Button>

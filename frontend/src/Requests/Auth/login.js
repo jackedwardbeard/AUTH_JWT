@@ -10,7 +10,6 @@ export const login = async({
         handleOpen
     }) => {
 
-    console.log('got inc params:', loginEmail, loginPassword)
     const data = {
         email: loginEmail,
         password: loginPassword

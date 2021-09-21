@@ -1,6 +1,7 @@
 import axios from 'axios'
+import { logout } from '../Auth/logout'
 
-export const accessProtectedRoute = async({setDialogText, handleOpen}) => {
+export const accessProtectedRoute = async(e, {setUser, setDialogText, handleOpen}) => {
 
     // get access token from localStorage
     const accessTokenNotJSON = localStorage.getItem('accessToken');
@@ -36,6 +37,8 @@ export const accessProtectedRoute = async({setDialogText, handleOpen}) => {
             .catch((err) => {
                 // if we get here, we couldn't refresh our access token (invalid refresh token or no refresh token)
                 console.log(err.response);
+                // logout
+                logout(e, {setUser, setDialogText, handleOpen});
                 setDialogText('Could not refresh access token (refresh token invalid).');
                 handleOpen();
             })
