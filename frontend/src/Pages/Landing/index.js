@@ -2,8 +2,9 @@ import React, { useContext, useState } from 'react'
 import { UserContext } from '../../Context/User'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
-import axios from 'axios'
 import './index.css'
+import { accessProtectedRoute } from '../../Requests/ProtectedRoute/accessProtectedRoute'
+import { accessUnprotectedRoute } from '../../Requests/UnprotectedRoute/accessUnprotectedRoute'
 
 const Landing = () => {
 
@@ -25,66 +26,13 @@ const Landing = () => {
     }
 
     // this backend route expects a valid access token, otherwise access will be denied
-    const accessProtectedRoute = async() => {
-
-        // get access token from localStorage
-        const accessTokenNotJSON = localStorage.getItem('accessToken');
-        const accessToken = JSON.parse(accessTokenNotJSON);
-        // allows us to send an access token
-        const options = {
-            withCredentials: true,
-            headers: {
-                Authorization: 'Bearer ' + accessToken
-            }
-        }
-        await axios.get('http://localhost:5000/protected',  options)
-        .then((res) => {
-            console.log(res);
-            setDialogText('Successfully accessed protected resource! The retrieved content is: ' + res.data);
-            handleOpen();
-        })
-        .catch(async(err) => {
-            // access token has expired, attempt to refresh it automatically
-            if (err.response.status === 403) {
-                const options = {
-                    withCredentials: true
-                }
-                await axios.get('http://localhost:5000/refreshEnabled/refresh', options)
-                .then((res) => {
-                    // get the newly refreshed access token
-                    const newAccessToken = res.data.accessToken;
-                    // update localStorage with the refreshed token
-                    localStorage.setItem('accessToken', JSON.stringify(newAccessToken));
-                    setDialogText('Access token expired. Automatically refreshed your access token... Try accessing the protected resource before it expires again.');
-                    handleOpen();
-                })
-                .catch((err) => {
-                    // if we get here, we couldn't refresh our access token (invalid refresh token or no refresh token)
-                    console.log(err.response);
-                    setDialogText('Could not refresh access token (refresh token invalid).');
-                    handleOpen();
-                })
-            }
-            // access token is not valid, console log it
-            console.log(err.response);
-        })
-        
+    const handleAccessProtectedRoute = () => {
+        accessProtectedRoute({setDialogText, handleOpen});
     }
 
     // no access token is needed to access this resource
-    const accessUnprotectedRoute = async() => {
-
-        await axios.get('http://localhost:5000/unprotected')
-        .then((res) => {
-            console.log(res);
-            setDialogText('Successfully accessed unprotected resource! The retrieved content is: ' + res.data);
-            handleOpen();
-        })
-        .catch((err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
+    const handleAccessUnprotectedRoute = () => {
+        accessUnprotectedRoute({setDialogText, handleOpen});
     }
 
     return (
@@ -117,11 +65,11 @@ const Landing = () => {
                     user ? 
                     <>
                     <p className='landingSubTextRoutes'>To access this resource, your access token needs to be valid (i.e, not expired). If expired, a dialog will pop-up notifying you of this, and the server will automatically get you a new one (assuming your refresh token is valid). If you don't get a new one, you'll have to login again to get a new refresh and access token.</p>
-                    <Button onClick={accessProtectedRoute} variant='contained' style={{margin: 'max(30px, 3vh) 0', fontWeight: 'bold'}}>
+                    <Button onClick={handleAccessProtectedRoute} variant='contained' style={{margin: 'max(30px, 3vh) 0', fontWeight: 'bold'}}>
                         Access Protected Route
                     </Button>
                     <p className='landingSubTextRoutes'>This resource is unprotected, so you can access it without a valid access token.</p>
-                    <Button onClick={accessUnprotectedRoute} variant='contained' style={{marginTop: 'max(30px, 3vh)', fontWeight: 'bold'}}>
+                    <Button onClick={handleAccessUnprotectedRoute} variant='contained' style={{marginTop: 'max(30px, 3vh)', fontWeight: 'bold'}}>
                         Access Unprotected Route
                     </Button>
                     </>

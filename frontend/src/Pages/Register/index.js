@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import './index.css'
-import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { register } from '../../Requests/Auth/register'
 
 const Register = () => {
 
@@ -43,30 +43,20 @@ const Register = () => {
     }
 
     // attempt to register
-    const register = async(e) => {
+    const handleRegister = () => {
 
-        e.preventDefault();
-        const data = {
-            firstName: registerFirstName,
-            lastName: registerLastName,
-            email: registerEmail,
-            password: registerPassword,
-            confirmPassword: registerConfirmPassword
-        };
-        await axios.post('http://localhost:5000/register', data, { withCredentials: true })
-        .then((res) => {
-            console.log(res);
-            setResStatus(200);
-            setDialogText('User successfully registered! Check your inbox to finalise the process.');
-            handleOpen();
-        })
-        .catch((err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
+        register({
+            registerFirstName, 
+            registerLastName, 
+            registerEmail, 
+            registerPassword, 
+            registerConfirmPassword,
+            setResStatus,
+            setDialogText,
+            handleOpen
+        });
 
-    };
+    }
 
     return (
 
@@ -105,7 +95,7 @@ const Register = () => {
                     placeholder='Confirm Password'
                     onChange={e => setRegisterConfirmPassword(e.target.value)}
                 />
-                <Button variant='contained' onClick={register} style={{margin: '30px'}}>Register</Button>
+                <Button variant='contained' onClick={handleRegister} style={{margin: '30px'}}>Register</Button>
                 <Link className='link' to='/login'>Already a member? Sign in.</Link>
             </form>
             <Dialog

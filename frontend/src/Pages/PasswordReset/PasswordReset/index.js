@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import axios from 'axios'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import './index.css'
+import { passwordReset } from '../../../Requests/PasswordReset/PasswordReset/passwordReset'
 
 const PasswordReset = (props) => {
 
@@ -40,33 +40,17 @@ const PasswordReset = (props) => {
     }
 
     // take input and reset the user's password to the new input
-    const passwordReset = async() => {
+    const handlePasswordReset = () => {
 
-        const data = {
-            token: accessToken,
-            userid: userID,
-            newPassword: newPassword
-        }
-        // if passwords match
-        if (newPassword === confirmNewPassword) {
-            await axios.post('http://localhost:5000/passwordReset', data)
-            .then((res) => {
-                console.log(res);
-                setResStatus(200);
-                setDialogText('Password successfully updated!');
-                handleOpen();
-            })
-            .catch((err) => {
-                console.log(err.response);
-                setDialogText(err.response.data);
-                handleOpen();
-            })
-        }
-        // passwords mismatch
-        else {
-            setDialogText('Passwords mismatch!');
-            handleOpen();
-        }
+        passwordReset({
+            accessToken, 
+            userID, 
+            newPassword, 
+            confirmNewPassword, 
+            setResStatus, 
+            setDialogText, 
+            handleOpen
+        });
 
     }
 
@@ -89,7 +73,7 @@ const PasswordReset = (props) => {
                     placeholder='Confirm New Password'
                     onChange={e => setConfirmNewPassword(e.target.value)}
                 />
-                <Button variant='contained' onClick={passwordReset} style={{margin: '30px'}}>Change Password</Button>
+                <Button variant='contained' onClick={handlePasswordReset} style={{margin: '30px'}}>Change Password</Button>
             </div>
             <Dialog
                 open={open}

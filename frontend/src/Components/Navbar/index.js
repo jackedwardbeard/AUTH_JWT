@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import './index.css'
 import logo from '../../Images/smiley.png'
 import { FaBars } from 'react-icons/fa' // mobile menu icon
-import axios from 'axios'
 import { UserContext } from '../../Context/User'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { logout } from '../../Requests/Auth/logout'
 
 const Navbar = ({reverseState}) => {
 
@@ -28,27 +28,8 @@ const Navbar = ({reverseState}) => {
     }
 
     // log user out (end session)
-    const logout = async(e) => {
-
-        e.preventDefault()
-        // lets us send the refreshToken cookie in req.cookies
-        const options = {
-            withCredentials: true,
-        }
-        await axios.get('http://localhost:5000/refreshEnabled/logout', options)
-        .then((res) => {
-            console.log('Successfully logged out!');
-            setUser(null);
-            localStorage.clear();
-            setDialogText('Successfully logged out!');
-            handleOpen();
-        })
-        .catch(async(err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
-
+    const handleLogout = () => {
+        logout({setUser, setDialogText, handleOpen});
     }
 
     return (
@@ -69,7 +50,7 @@ const Navbar = ({reverseState}) => {
                             <Link className='nav_link' to='/'>Home</Link>
                         </li>
                         <li>
-                            <Link className='nav_link' onClick={logout}>Logout</Link>
+                            <Link className='nav_link' onClick={handleLogout}>Logout</Link>
                         </li>
                     </>
                     :

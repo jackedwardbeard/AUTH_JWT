@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
 import './index.css'
 import { Link } from 'react-router-dom';
-import axios from 'axios'
 import { UserContext } from '../../Context/User'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import { Drawer, List, ListItem } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
+import { logout } from '../../Requests/Auth/logout'
 
 const MobileMenu = ({clicked, reverseState}) => {
 
@@ -28,27 +28,8 @@ const MobileMenu = ({clicked, reverseState}) => {
     }
 
     // log user out (end session)
-    const logout = async(e) => {
-
-        e.preventDefault()
-        // lets us send the refreshToken cookie in req.cookies
-        const options = {
-            withCredentials: true,   
-        }
-        await axios.get('http://localhost:5000/refreshEnabled/logout', options)
-        .then((res) => {
-            console.log('Successfully logged out!');
-            setUser(null);
-            localStorage.clear();
-            setDialogText('Successfully logged out!');
-            handleOpen();
-        })
-        .catch(async(err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
-
+    const handleLogout = () => {
+        logout({setUser, setDialogText, handleOpen});
     }
     
     return (
@@ -65,7 +46,7 @@ const MobileMenu = ({clicked, reverseState}) => {
                         </ListItem>
                         <Divider/>
                         <ListItem>
-                            <Link className='mobileLink' onClick={logout}>Logout</Link>
+                            <Link className='mobileLink' onClick={handleLogout}>Logout</Link>
                         </ListItem>
                         <Divider/>
                         </>

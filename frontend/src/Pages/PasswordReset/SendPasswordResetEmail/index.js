@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import axios from 'axios'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import './index.css'
+import { sendPasswordResetEmail } from '../../../Requests/PasswordReset/SendPasswordResetEmail/sendPasswordResetEmail'
 
 const SendPasswordResetEmail = () => {
 
@@ -34,25 +34,9 @@ const SendPasswordResetEmail = () => {
 
     }
 
-    const sendPasswordResetEmail = async() => {
-
-        const data = {
-            email: email
-        }
-        // take email entered into input box
-        await axios.post('http://localhost:5000/sendPasswordResetEmail', data)
-        .then((res) => {
-            console.log(res);
-            setResStatus(200);
-            setDialogText('An email containing instructions on how to reset your password has been sent.');
-            handleOpen();
-        })
-        .catch((err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
-        
+    // send the user an email to reset their password
+    const handleSendPasswordResetEmail = () => {
+        sendPasswordResetEmail({email, setResStatus, setDialogText, handleOpen});
     }
 
     return (
@@ -68,7 +52,7 @@ const SendPasswordResetEmail = () => {
                     placeholder='Email'
                     onChange={e => setEmail(e.target.value)}
                 />
-                <Button variant='contained' onClick={sendPasswordResetEmail} style={{margin: '30px'}}>Send Reset Email</Button>
+                <Button variant='contained' onClick={handleSendPasswordResetEmail} style={{margin: '30px'}}>Send Reset Email</Button>
             </div>
             <Dialog
                 open={open}

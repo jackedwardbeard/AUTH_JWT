@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import axios from 'axios'
 import Button from '@material-ui/core/Button'
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import './index.css'
+import { confirmUser } from '../../Requests/ConfirmEmail/confirmUser'
 
 const ConfirmEmail = (props) => {
 
@@ -38,21 +38,8 @@ const ConfirmEmail = (props) => {
     }
 
     // confirm the given user ID's email upon button click
-    const confirmUser = async() => {
-
-        await axios.post('http://localhost:5000/confirmEmail', userID)
-        .then((res) => {
-            console.log(res);
-            setResStatus(200);
-            setDialogText('Email successfully confirmed!');
-            handleOpen();
-        })
-        .catch((err) => {
-            console.log(err.response);
-            setDialogText(err.response.data);
-            handleOpen();
-        })
-        
+    const handleConfirmUser = () => {
+        confirmUser({userID, setResStatus, setDialogText, handleOpen});
     }
 
     return (
@@ -62,7 +49,7 @@ const ConfirmEmail = (props) => {
                 <p className='title'>Email Confirmation</p>
                 <p className='confirmEmailText'>To finalise your registeration, click the button below.</p>
                 <div className='confirmEmailButtonContainer'>
-                    <Button variant='contained' onClick={confirmUser} style={{margin: '30px'}}>Confirm Email</Button>
+                    <Button variant='contained' onClick={handleConfirmUser} style={{margin: '30px'}}>Confirm Email</Button>
                 </div>
             </div>
             <Dialog
